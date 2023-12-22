@@ -1,0 +1,37 @@
+name: build
+
+on:
+  push:
+    paths:
+    - '**.kicad_sch'
+    - '**.kicad_pcb'
+    - '.github/workflows/build.yaml'
+    - 'config.kibot.yaml'
+  pull_request:
+    paths:
+      - '**.kicad_sch'
+      - '**.kicad_pcb'
+      - '.github/workflows/build.yaml'
+      - 'config.kibot.yaml'
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
+    - uses: INTI-CMNB/KiBot@v2_k7
+      with:
+        config: default.kibot.yaml
+        dir: docs
+    - name: Commit results
+      run: |
+            git status
+            git config --global user.name 'Torsten Wylegala'
+            git config --global user.email 'twyleg@users.noreply.github.com'
+            git add docs/
+            git commit -m "Generated docs"
+            git push
